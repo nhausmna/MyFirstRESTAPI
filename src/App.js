@@ -5,17 +5,22 @@ import axios from 'axios';
 
 class App extends Component {
   state = {
-    characters: [],
+    characters: []
   }
 
   removeCharacter = index => {
     const { characters } = this.state
 
-    this.setState({
-      characters: characters.filter((character, i) => {
-        return i !== index
-      }),
-    })
+    this.makeDeleteCall(characters[index]).then(callResult => {
+      if (callResult === true) {
+        this.setState({
+          characters: characters.filter((character, i) => {
+            return i !== index;
+          }),
+        })
+      }
+    });
+
   }
   render() {
     const { characters } = this.state
@@ -27,10 +32,11 @@ class App extends Component {
       </div>
     )
   }
+
   handleSubmit = character => {
     this.makePostCall(character).then(callResult => {
-      if (callResult === true) {
-        this.setState({ characters: [...this.state.characters, character] });
+      if (callResult.status === 201) {
+        this.setState({ characters: [...this.state.characters, callResult.data] });
       }
     });
   }
@@ -47,16 +53,28 @@ class App extends Component {
       });
   }
 
-  makePostCall(character){
+  makePostCall(character) {
     return axios.post('http://localhost:5000/users', character)
-     .then(function (response) {
-       console.log(response);
-       return (response.status === 201);
-     })
-     .catch(function (error) {
-       console.log(error);
-       return false;
-     });
+      .then(function (response) {
+        console.log(response);
+        return response;
+      })
+      .catch(function (error) {
+        console.log(error);
+        return false;
+      });
+  }
+
+  makeDeleteCall(character) {
+    return axios.delete('http://localhost:5000/users', { data: character })
+      .then(function (response) {
+        console.log(response);
+        return (response.status === 200);
+      })
+      .catch(function (error) {
+        console.log(error);
+        return false;
+      });
   }
 
 }
