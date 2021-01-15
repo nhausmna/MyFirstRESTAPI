@@ -32,17 +32,18 @@ def get_users():
       userToAdd = request.get_json()
       #here change ID
       userToAdd['id'] = generateID()
-
       users['users_list'].append(userToAdd)
-      resp = jsonify(success=True)
+      resp = jsonify(userToAdd)
       resp.status_code = 201
       #resp.status_code = 200 #optionally, you can always set a response code. 
       # 200 is the default code for a normal response
       return resp
+
    elif request.method == 'DELETE':
       userToDel = request.get_json()
       users['users_list'].remove(userToDel)
       resp = jsonify(success=True)
+      resp.status_code = 200
       #resp.status_code = 200 #optionally, you can always set a response code. 
       # 200 is the default code for a normal response
       return resp
